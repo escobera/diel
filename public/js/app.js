@@ -16,6 +16,20 @@
     model: function() {
       return this.store.find('estudante');
     }
+  });
+
+  App.EstudantesController = Ember.ArrayController.extend({
+    actions: {
+      createEstudante: function() {
+        var nome = this.get('nome');
+        var estudante = this.store.createRecord('estudante', { 
+          nome: nome
+        });
+        this.set('nome', '');
+
+        estudante.save();
+      }
+    }
   })
 
 })();
