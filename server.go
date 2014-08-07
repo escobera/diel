@@ -1,32 +1,32 @@
 package main
 
 import (
-	"encoding/json"
+	_ "encoding/json"
 	"fmt"
-	"os"
+	"net/http"
 	"time"
 
 	"github.com/go-martini/martini"
 	"github.com/go-xorm/xorm"
 	_ "github.com/lib/pq"
+	"github.com/martini-contrib/render"
 )
 
 type Estudante struct {
-	Id        int64
-	Nome      string
-	Matricula string
-	Created   time.Time `xorm:"created"`
+	Id        int64     `json:"id"`
+	Nome      string    `json:"nome"`
+	Matricula string    `json:"matricula"`
+	Created   time.Time `json:"created_at" xorm:"created"`
 }
 
-func Estudantes(orm *xorm.Engine, params martini.Params) {
+func Estudantes(orm *xorm.Engine, r render.Render, params martini.Params) {
 	var estudantes []Estudante
 	orm.Find(&estudantes)
-	resultado, _ := json.Marshal(estudantes)
-	os.Stdout.Write(resultado)
+	r.JSON(200, map[string]interface{}{"estudantes": estudantes})
 }
 
 func main() {
-	orm, err := xorm.NewEngine("postgres", "postgres://rafa:@localhost:5432/diel?sslmode=disable")
+	orm, err := xorm.NewEngine("postgres", "postgres://postgres:postgres@localhost:5432/diel?sslmode=disable")
 	orm.ShowDebug = true
 	orm.ShowSQL = true
 
@@ -43,7 +43,16 @@ func main() {
 	}
 	defer orm.Close()
 	m := martini.Classic()
+	m.Use(render.Renderer(render.Options{
+		HTMLContentType: "application/json",
+	}))
 	m.Map(orm)
+
+	m.Get("/", func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "text/html")
+		http.ServeFile(w, r, "public/index.html")
+	})
+
 	m.Get("/estudantes", Estudantes)
 	m.Run()
 }
