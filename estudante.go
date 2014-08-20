@@ -9,46 +9,46 @@ import (
 	"github.com/martini-contrib/render"
 )
 
-type Estudante struct {
+type Student struct {
 	Id        int64     `form:"id" json:"id"`
-	Nome      string    `form:"nome" json:"nome"`
-	Matricula string    `form:"matricula" json:"matricula"`
+	Nome      string    `form:"name" json:"name"`
+	Matricula string    `form:"registration" json:"registration"`
 	Created   time.Time `form:"created_at" json:"created_at" xorm:"CREATED"`
 }
 
-type EstudanteJSON struct {
-	Estudante Estudante `json:"estudante"`
+type StudentJSON struct {
+	Student Student `json:"student"`
 }
 
-func Estudantes(orm *xorm.Engine, r render.Render) {
-	var estudantes []Estudante
-	orm.Find(&estudantes)
-	r.JSON(200, map[string]interface{}{"estudantes": estudantes})
+func Students(orm *xorm.Engine, r render.Render) {
+	var students []Student
+	//orm.Find(&students)
+	r.JSON(200, map[string]interface{}{"students": students})
 }
 
-func CreateEstudante(orm *xorm.Engine, r render.Render, estudanteJson EstudanteJSON) {
-	estudante := estudanteJson.Estudante
-	_, err := orm.Insert(estudante)
+func CreateStudent(orm *xorm.Engine, r render.Render, studentJson StudentJSON) {
+	student := studentJson.Student
+	_, err := orm.Insert(student)
 	if err != nil {
 		fmt.Println(err)
 		return
 	}
-	r.JSON(200, map[string]interface{}{"estudante": estudante})
+	r.JSON(200, map[string]interface{}{"student": student})
 }
 
-func UpdateEstudante(orm *xorm.Engine, r render.Render, params martini.Params, estudanteJson EstudanteJSON) {
-	estudante := estudanteJson.Estudante
-	fmt.Println(estudante)
-	_, err := orm.Id(params["id"]).Update(estudante)
+func UpdateStudent(orm *xorm.Engine, r render.Render, params martini.Params, studentJson StudentJSON) {
+	student := studentJson.Student
+	fmt.Println(student)
+	_, err := orm.Id(params["id"]).Update(student)
 	if err != nil {
 		fmt.Println(err)
 		return
 	}
-	r.JSON(200, map[string]interface{}{"estudante": estudante})
+	r.JSON(200, map[string]interface{}{"student": student})
 }
 
-func DeleteEstudante(orm *xorm.Engine, r render.Render, params martini.Params) {
-	_, err := orm.Id(params["id"]).Delete(&Estudante{})
+func DeleteStudent(orm *xorm.Engine, r render.Render, params martini.Params) {
+	_, err := orm.Id(params["id"]).Delete(&Student{})
 	if err != nil {
 		fmt.Println(err)
 		return
