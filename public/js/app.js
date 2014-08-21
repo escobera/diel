@@ -3,9 +3,8 @@
   var App = Ember.Application.create();
 
   App.Router.map(function() {
-    this.resource('estudantes', function () {
-      this.resource('estudante', { path : ":estudante_id"})
-    })
+    this.resource('estudantes')
+    this.resource('estudante', { path : ":estudante_id"})
     this.resource('about')
   });
 
@@ -23,7 +22,7 @@
 
   App.EstudantesController = Ember.ArrayController.extend({
     actions: {
-      createEstudante: function() {
+      create: function() {
         var nome = this.get('nome');
         var matricula = this.get('matricula');
 
@@ -31,34 +30,25 @@
           nome: nome,
           matricula: matricula
         });
+
         this.set('nome', '');
         this.set('matricula', '');
 
         estudante.save();
-      },
-      destroyEstudante: function(estudante) {
-        console.log("Removendo estudante: " + estudante.get('nome'));
-        estudante.destroyRecord();
-      }
+      }      
     }
   });
 
-  App.EstudantesController = Ember.ArrayController.extend({
+  App.EstudanteController = Ember.ObjectController.extend({
+    isEditing: false,
     actions: {
-      edit: function() {
-        var nome = this.get('nome');
-        var matricula = this.get('matricula');
-
-        var estudante = this.store.createRecord('estudante', {
-          nome: nome,
-          matricula: matricula
-        });
-        this.set('nome', '');
-        this.set('matricula', '');
-
-        estudante.save();
+      edit: function(estudante) {
+        this.isEditing = true;
       },
-      destroyEstudante: function(estudante) {
+      doneEditing: function() {
+        this.isEditing = false;
+      },
+      destroy: function(estudante) {
         console.log("Removendo estudante: " + estudante.get('nome'));
         estudante.destroyRecord();
       }
