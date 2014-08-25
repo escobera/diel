@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"strconv"
 	"time"
 
 	"github.com/go-martini/martini"
@@ -38,8 +39,8 @@ func CreateStudent(orm *xorm.Engine, r render.Render, studentJson StudentJSON) {
 
 func UpdateStudent(orm *xorm.Engine, r render.Render, params martini.Params, studentJson StudentJSON) {
 	student := studentJson.Student
-	fmt.Println(student)
-	_, err := orm.Id(params["id"]).Update(student)
+	student.Id, _ = strconv.ParseInt(params["id"], 10, 64)
+	_, err := orm.Id(student.Id).Update(&student)
 	if err != nil {
 		fmt.Println(err)
 		return

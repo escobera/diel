@@ -37,6 +37,7 @@ func main() {
 	}))
 	m.Use(cors.Allow(&cors.Options{
 		AllowOrigins:     []string{"http://localhost:4200"},
+		AllowMethods:     []string{"PUT", "PATCH", "POST", "OPTIONS", "GET", "DELETE"},
 		AllowHeaders:     []string{"Origin", "Content-Type"},
 		ExposeHeaders:    []string{"Content-Length"},
 		AllowCredentials: true,
@@ -51,7 +52,7 @@ func main() {
 	//Student
 	m.Get("/students", Students)
 	m.Post("/students", binding.Json(StudentJSON{}), CreateStudent)
-	m.Patch("/students/:id", binding.Json(StudentJSON{}), UpdateStudent)
+	m.Put("/students/:id", binding.Json(StudentJSON{}), UpdateStudent)
 	m.Delete("/students/:id", binding.Json(StudentJSON{}), DeleteStudent)
 	m.Run()
 }
