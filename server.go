@@ -6,7 +6,7 @@ import (
 	"net/http"
 
 	"github.com/go-martini/martini"
-	"github.com/go-xorm/xorm"
+	"github.com/jinzhu/gorm"
 	_ "github.com/lib/pq"
 	"github.com/martini-contrib/binding"
 	"github.com/martini-contrib/cors"
@@ -14,24 +14,21 @@ import (
 )
 
 func main() {
-	orm, err := xorm.NewEngine("postgres", "postgres://postgres:postgres@localhost:5432/diel?sslmode=disable")
-	orm.ShowDebug = true
-	orm.ShowSQL = true
-
+	db, err := gorm.Open("postgres", "user=postgres password=postgres dbname=diel sslmode=disable")
 	if err != nil {
 		fmt.Println(err)
 		return
 	}
-
-	// Sync DB
-	err = orm.Sync(new(Student))
+	defer db.Close()
+	db.LogMode(true)
+	// Migrate DB
+	db.AutoMigrate(Student{})
 	if err != nil {
 		fmt.Println(err)
 		return
 	}
-	defer orm.Close()
 	m := martini.Classic()
-	m.Map(orm)
+	m.Map(&db)
 	m.Use(render.Renderer(render.Options{
 		HTMLContentType: "application/json",
 	}))
@@ -52,7 +49,13 @@ func main() {
 	//Student
 	m.Get("/students", Students)
 	m.Post("/students", binding.Json(StudentJSON{}), CreateStudent)
-	m.Put("/students/:id", binding.Json(StudentJSON{}), UpdateStudent)
-	m.Delete("/students/:id", binding.Json(StudentJSON{}), DeleteStudent)
+	// m.Put("/students/:id", binding.Json(StudentJSON{}), UpdateStudent)
+	// m.Delete("/students/:id", binding.Json(StudentJSON{}), DeleteStudent)
+
+	//Course
+	// m.Get("/courses", Courses)
+	// m.Post("/courses", binding.Json(CourseJSON{}), CreateCourse)
+	// m.Put("/courses/:id", binding.Json(CourseJSON{}), UpdateCourse)
+	// m.Delete("/courses/:id", binding.Json(CourseJSON{}), DeleteCourse)
 	m.Run()
 }
