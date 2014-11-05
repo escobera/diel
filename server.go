@@ -49,8 +49,8 @@ func main() {
 	//Student
 	m.Get("/students", Students)
 	m.Post("/students", binding.Json(StudentJSON{}), CreateStudent)
-	// m.Put("/students/:id", binding.Json(StudentJSON{}), UpdateStudent)
-	// m.Delete("/students/:id", binding.Json(StudentJSON{}), DeleteStudent)
+	m.Put("/students/:id", binding.Json(StudentJSON{}), UpdateStudent)
+	m.Delete("/students/:id", binding.Json(StudentJSON{}), DeleteStudent)
 
 	//Course
 	// m.Get("/courses", Courses)

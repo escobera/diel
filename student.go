@@ -1,10 +1,12 @@
 package main
 
 import (
-	"time"
-
+	"fmt"
+	"github.com/go-martini/martini"
 	"github.com/jinzhu/gorm"
 	"github.com/martini-contrib/render"
+	"strconv"
+	"time"
 )
 
 type Student struct {
@@ -26,31 +28,33 @@ func Students(db *gorm.DB, r render.Render) {
 }
 
 func CreateStudent(db *gorm.DB, r render.Render, studentJson StudentJSON) {
-	// student := studentJson.Student
-	// _, err := orm.Insert(student)
-	// if err != nil {
-	// 	fmt.Println(err)
-	// 	return
-	// }
-	// r.JSON(200, map[string]interface{}{"student": student})
+	student := studentJson.Student
+	err := db.Create(&student)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	r.JSON(200, map[string]interface{}{"student": student})
 }
 
-// func UpdateStudent(orm *xorm.Engine, r render.Render, params martini.Params, studentJson StudentJSON) {
-// 	student := studentJson.Student
-// 	student.Id, _ = strconv.ParseInt(params["id"], 10, 64)
-// 	_, err := orm.Id(student.Id).Update(&student)
-// 	if err != nil {
-// 		fmt.Println(err)
-// 		return
-// 	}
-// 	r.JSON(200, map[string]interface{}{"student": student})
-// }
+func UpdateStudent(db *gorm.DB, r render.Render, params martini.Params, studentJson StudentJSON) {
+	student := studentJson.Student
+	student.Id, _ = strconv.ParseInt(params["id"], 10, 64)
+	err := db.Save(&student)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	r.JSON(200, map[string]interface{}{"student": student})
+}
 
-// func DeleteStudent(orm *xorm.Engine, r render.Render, params martini.Params) {
-// 	_, err := orm.Id(params["id"]).Delete(&Student{})
-// 	if err != nil {
-// 		fmt.Println(err)
-// 		return
-// 	}
-// 	r.JSON(204, map[string]interface{}{})
-// }
+func DeleteStudent(db *gorm.DB, r render.Render, params martini.Params) {
+	student := &Student{}
+	student.Id, _ = strconv.ParseInt(params["id"], 10, 64)
+	err := db.Delete(&student)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	r.JSON(204, map[string]interface{}{})
+}
