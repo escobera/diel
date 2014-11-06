@@ -14,7 +14,7 @@ import (
 )
 
 func main() {
-	db, err := gorm.Open("postgres", "user=postgres password=postgres dbname=diel sslmode=disable")
+	db, err := gorm.Open("postgres", "user=rafa dbname=diel sslmode=disable")
 	if err != nil {
 		fmt.Println(err)
 		return
