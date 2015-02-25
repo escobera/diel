@@ -1,0 +1,75 @@
+package main
+
+import (
+	"fmt"
+	"io/ioutil"
+	"os"
+
+	"github.com/escobera/diel/service"
+	"gopkg.in/yaml.v2"
+)
+
+func main() {
+	// db, err := gorm.Open("postgres", "user=rafa dbname=diel sslmode=disable")
+	// if err != nil {
+	// 	fmt.Println(err)
+	// 	return
+	// }
+	// defer db.Close()
+	// db.LogMode(true)
+	// // Migrate DB
+	// db.AutoMigrate(Student{})
+	// if err != nil {
+	// 	fmt.Println(err)
+	// 	return
+	// }
+	const yamlPath = "config/config.yml"
+	config := service.Config{}
+
+	if _, err := os.Stat(yamlPath); err != nil {
+		fmt.Println("File doesn't exist.")
+	}
+
+	ymlData, err := ioutil.ReadFile(yamlPath)
+	if err != nil {
+		fmt.Println("Can't read config file.")
+	}
+
+	err = yaml.Unmarshal([]byte(ymlData), &config)
+	srv := service.Diel{}
+
+	if err := srv.Run(config); err != nil {
+		fmt.Println(err)
+	}
+
+	// m.Map(&db)
+	// m.Use(render.Renderer(render.Options{
+	// 	HTMLContentType: "application/json",
+	// }))
+	// m.Use(cors.Allow(&cors.Options{
+	// 	AllowOrigins:     []string{"http://localhost:4200"},
+	// 	AllowMethods:     []string{"PUT", "PATCH", "POST", "OPTIONS", "GET", "DELETE"},
+	// 	AllowHeaders:     []string{"Origin", "Content-Type"},
+	// 	ExposeHeaders:    []string{"Content-Length"},
+	// 	AllowCredentials: true,
+	// }))
+
+	//Root
+	// router.Get("/", func(c *gin.Context) {
+	// 	w.Header().Set("Content-Type", "text/html")
+	// 	http.ServeFile(w, r, "public/index.html")
+	// })
+
+	//Student
+	// m.Get("/students", Students)
+	// m.Post("/students", binding.Json(StudentJSON{}), CreateStudent)
+	// m.Put("/students/:id", binding.Json(StudentJSON{}), UpdateStudent)
+	// m.Delete("/students/:id", binding.Json(StudentJSON{}), DeleteStudent)
+
+	//Course
+	// m.Get("/courses", Courses)
+	// m.Post("/courses", binding.Json(CourseJSON{}), CreateCourse)
+	// m.Put("/courses/:id", binding.Json(CourseJSON{}), UpdateCourse)
+	// m.Delete("/courses/:id", binding.Json(CourseJSON{}), DeleteCourse)
+
+}
