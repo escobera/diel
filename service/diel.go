@@ -21,7 +21,7 @@ type Diel struct {
 }
 
 func (s *Diel) getDb(cfg Config) (gorm.DB, error) {
-	connectionString := fmt.Sprintf("user=%s dbname=%s sslmode=disabled", cfg.DbUser, cfg.DbPassword)
+	connectionString := fmt.Sprintf("user=%s dbname=%s sslmode=disable", cfg.DbUser, cfg.DbName)
 
 	return gorm.Open("postgres", connectionString)
 }
@@ -29,7 +29,7 @@ func (s *Diel) getDb(cfg Config) (gorm.DB, error) {
 func (s *Diel) Migrate(cfg Config) error {
 	db, err := s.getDb(cfg)
 	if err != nil {
-		return err
+		fmt.Println(err)
 	}
 	db.LogMode(true)
 	defer db.Close()
@@ -37,6 +37,7 @@ func (s *Diel) Migrate(cfg Config) error {
 	db.AutoMigrate(&resource.Student{})
 	return nil
 }
+
 func (s *Diel) Run(cfg Config) error {
 	db, err := s.getDb(cfg)
 	if err != nil {
